@@ -1,10 +1,6 @@
-# Your Project Name
+# StudySprint Planner
 
-> **Replace this whole file.** It is a worked example of the README your project
-> will be graded from, not a file to leave as it is. Start with
-> [START-HERE.md](START-HERE.md).
-
-One sentence saying what this does and who it is for.
+A lightweight task planner that helps students organize their assignments, deadlines, and priorities in one place
 
 **Live site:** https://yourusername.github.io/your-repo-name/
 **API:** https://your-api.onrender.com/healthz
@@ -18,9 +14,11 @@ One sentence saying what this does and who it is for.
 
 ## What it does
 
-- Report a sighting with a place, a description and a spookiness rating
-- Browse everything reported, newest first
-- Delete a report
+- Add a task with a subject, due date, and priority
+- See every task in one list, sorted by what's due soonest
+- Filter tasks by all, active, or completed
+- Mark a task complete, or delete it once it's no longer needed
+
 
 ## Built with
 
@@ -140,34 +138,30 @@ once against the hosted database.
 
 ## Architecture
 
-Three or four sentences, or a small diagram. Which piece talks to which, and
-where each one is hosted.
+The client (React, built by Vite) is a static site on GitHub Pages. It calls an Express API over HTTPS at the URL above; the API is the only thing that talks to PostgreSQL directly, using parameterized queries. There's no auth — it's a single-user app, so every request just reads and writes the one shared tasks table.
 
 ## What I would do next
 
-Three honest bullets. This paragraph is worth more than it looks.
+- Bring in the study-session half of the original idea — right now only assignments are tracked, not study time.
+- Recurring tasks, so a weekly reading doesn't need re-adding every week.
+- A "due soon" view, since nothing currently surfaces what's due today versus next month.
+
 
 ## Author
 
-Your name, and a link. Course and section.
+Jeanne Clarisse Bermudo
+Course and Section: Computer Science | CS - 401
 
 ## AI use
 
-If you used AI while building this, say so here. Honest disclosure is the
-standard in this course and increasingly outside it, and reporting heavy use
-accurately costs you nothing.
-
-This section is the last 10 points of the finals badge, and it wants three
-things:
+I used AI while building this — full disclosure is in AI-USAGE.md.
 
 ![Built with AI assistance](https://img.shields.io/badge/built%20with-AI%20assistance-0b5fff)
 
 - the badge above, or one you like better
-- a line naming which assistant you used and how much of the work it touched
-- a link to [AI-USAGE.md](AI-USAGE.md), where the full account lives
+- AI assistant used: ChatGPT, Google Gemini
+- Full account:[AI-USAGE.md](AI-USAGE.md)
 
-Keep the detail in `AI-USAGE.md` rather than here. This section is the summary a
-visitor reads; that file is the record the badge is graded from.
 
 ## Licence
 
