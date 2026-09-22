@@ -2,7 +2,7 @@
 
 A lightweight task planner that helps students organize their assignments, deadlines, and priorities in one place
 
-**Live site:** https://yourusername.github.io/your-repo-name/
+**Live site:** https://merwwki.github.io/StudySprint-Planner/
 **API:** https://your-api.onrender.com/healthz
 **Demo video:** (link)
 
