@@ -22,13 +22,13 @@ A lightweight academic task planner that helps students organize assignments, de
 ## 1. Overview
 StudySprint Planner is a web-based task management application for students. It allows users to create academic tasks, provide information such as the subject, description, due date, and priority, view their tasks, and delete tasks when they are no longer needed. The current version focuses on establishing the frontend and basic task-management functionality. A real Express API and PostgreSQL database are planned for a later development stage.
 
-## 2. Setup and installation
-
-
 ## Built with
 
 React and Vite on the front end, Express and PostgreSQL on the back end. The
 client is on GitHub Pages, the API on (host), the database on (host).
+
+## 2. Setup and installation
+
 
 ## Demo mode
 
