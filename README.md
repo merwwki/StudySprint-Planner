@@ -1,6 +1,6 @@
 # StudySprint Planner
 
-A lightweight task planner that helps students organize their assignments, deadlines, and priorities in one place
+A lightweight academic task planner that helps students organize assignments, deadlines, subjects, and priorities in one place. It is designed for students who want a simple way to keep track of their academic workload.
 
 **Live site:** https://merwwki.github.io/StudySprint-Planner/
 **API:** https://your-api.onrender.com/healthz
@@ -18,6 +18,11 @@ A lightweight task planner that helps students organize their assignments, deadl
 - See every task in one list, sorted by what's due soonest
 - Filter tasks by all, active, or completed
 - Mark a task complete, or delete it once it's no longer needed
+
+## 1. Overview
+StudySprint Planner is a web-based task management application for students. It allows users to create academic tasks, provide information such as the subject, description, due date, and priority, view their tasks, and delete tasks when they are no longer needed. The current version focuses on establishing the frontend and basic task-management functionality. A real Express API and PostgreSQL database are planned for a later development stage.
+
+## 2. Setup and installation
 
 
 ## Built with
