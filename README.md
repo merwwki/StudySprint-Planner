@@ -67,8 +67,8 @@ Page 10 is the decision page if you do not know which to pick.
 **The whole stack.** Needs a PostgreSQL, either local or hosted.
 
     # 1. the database
-    docker run --name my-pg -e POSTGRES_PASSWORD=devpassword \
-      -e POSTGRES_DB=haunted -p 5432:5432 -d postgres:17
+    docker run --name studysprint-pg -e POSTGRES_PASSWORD=devpassword \
+      -e POSTGRES_DB=studysprint -p 5432:5432 -d postgres:17
 
     # 2. the API
     cd server
@@ -88,7 +88,7 @@ Check the API on its own before you blame the client:
 
     curl http://localhost:3000/healthz     # is the process alive
     curl http://localhost:3000/readyz      # is the database reachable
-    curl http://localhost:3000/api/sightings
+    curl http://localhost:3000/api/tasks
 
 ## Environment variables
 
@@ -138,11 +138,11 @@ once against the hosted database.
 
 ## Architecture
 
-The client (React, built by Vite) is a static site on GitHub Pages. It calls an Express API over HTTPS at the URL above; the API is the only thing that talks to PostgreSQL directly, using parameterized queries. There's no auth — it's a single-user app, so every request just reads and writes the one shared tasks table.
+The client (React, built by Vite) is a static site on GitHub Pages. It calls an Express API over HTTPS at the URL above; the API is the only thing that talks to PostgreSQL directly, using parameterized queries. The application is designed as a single-user student planner, so it does not include authentication or user accounts. The client communicates with an Express API, which handles task data stored in PostgreSQL.
 
 ## What I would do next
 
-- Bring in the study-session half of the original idea — right now only assignments are tracked, not study time.
+- Add search and filtering by subject or priority.
 - Recurring tasks, so a weekly reading doesn't need re-adding every week.
 - A "due soon" view, since nothing currently surfaces what's due today versus next month.
 
