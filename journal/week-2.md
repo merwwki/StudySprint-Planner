@@ -1,22 +1,25 @@
 # Reflection Journal
 
-## Week of: September 23, 2026
+## Week of: September 30, 2026
 
 ## My goal this week
 
-My goal this week is to start developing the StudySprint Planner by setting up the project repository and building the initial frontend. I wanted to transform the provided starter template into an academic task planner and get the main task-management features working before starting the backend.
-
+My goal this week is to continue improving the StudySprint Planner and begin moving from the frontend prototype toward a full-stack application. After getting the basic frontend working during Week 1, I wanted to better understand how the React frontend would communicate with an Express backend and eventually connect to a PostgreSQL database.
 ## What I did
 
-- I created the GitHub repository for the StudySprint Planner and updated the LICENSE and README.md. I then set up and ran the React/Vite frontend locally.
-- I modified the starter template so that it worked as a study task planner instead of the original sightings application. I replaced the sample data with academic tasks containing titles, subjects, descriptions, due dates, and priorities. I also updated the mock API to work with study tasks and use localStorage to save the data in the browser.
-- I built the main StudySprint Planner interface, including a form for adding tasks and a list for displaying them. I added functionality to create and delete tasks and made sure tasks remained saved after refreshing the page. I also updated the CSS to give the application a cleaner academic planner design.
-- I configured the project for GitHub Pages and pushed my project changes to GitHub. I also created and pushed the weekly increment report required for the project.
+- I continued improving the StudySprint Planner interface and tested the existing task-management features to make sure they were working properly.
+- I refined the task creation form and task list so that important information such as the task title, subject, description, due date, priority, and completion status could be handled properly.
+- I continued testing the localStorage functionality and checked that tasks remained available after refreshing the application.
+- I reviewed the frontend project structure and the different files involved in handling the interface, API functions, sample data, and styling.
+- I started working on the Express backend and began organizing the backend structure for the project.
+- I reviewed how the backend API would eventually communicate with the React frontend and how the task data would be handled through API requests.
+- I also started preparing for the PostgreSQL database by reviewing the information that needs to be stored for each study task.
+- I continued updating the project documentation based on the progress and changes made during this week.
 
 ## What blocked me
 
-One of my main difficulties was understanding the project structure because there were several folders and instructions, including the public project repository and the private course workspace. I was initially unsure about where files such as REPORT.md and other documentation were supposed to be placed. I also encountered a blank white page after changing the starter application. I eventually found that api/index.js was still importing and exporting the old sighting-related functions, which did not match the new task-based API. After updating it to use the task API, the application worked again. The main difficulty I have now is just understanding where files are supposed to be placed, because there were so many instructions that are very long. I had to clarify with an AI assistant which belongs to which, but the AI also struggled.
+My main difficulty this week was understanding how the frontend, backend, and database were supposed to work together. I was already more comfortable with the React frontend because I had worked on it during Week 1, but the Express backend was a new part of the project for me. I also had difficulty understanding how the task data in the frontend should correspond to the database structure. I had to think about which fields needed to be stored and how the backend would receive and return those values. Another challenge was figuring out which parts of the existing mock API needed to be replaced once the real backend was introduced. The project instructions were also still a little overwhelming because there are several requirements that need to be completed separately. I sometimes had to go back to the instructions and check whether I was working on the correct part of the project.
 
 ## What I learned
 
-I learned how the different parts of a React/Vite project connect to each other. In particular, I now understand better how App.jsx, the API files, seed.json, and styles.css work together. I also learned the difference between the frontend and backend parts of the project. At this stage, the application is using a mock API and browser localStorage, so it can demonstrate the basic task-management features without a database or server. I now understand that the later backend will replace this mock setup with an actual API and database. I also learned that when changing a starter template, it is important to check all related files and references instead of only changing the main interface. The blank page helped me understand how an outdated API import can prevent the entire React application from loading. Finally, although not completely, but I learned more about using GitHub to store and update my project and how to organize project files separately from course documentation.
+This week, I learned more about how a full-stack application is divided into different parts. I now have a better understanding that the React/Vite frontend is responsible for the user interface, while the Express backend handles requests and communicates with the database. I also learned that moving from a mock API to a real backend requires more than just changing one file. The frontend, API routes, database structure, and environment variables all need to work together correctly. I also became more comfortable navigating the project structure and understanding where different parts of the application belong. Compared with Week 1, I feel less confused about the overall organization of the project, although I still need to learn more about backend development and PostgreSQL. Overall, Week 2 helped me understand that building the project is not only about making the interface look and work properly. The backend and database are important because they will allow the application to store and manage data properly instead of relying only on browser storage.
