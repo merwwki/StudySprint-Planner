@@ -1,42 +1,44 @@
 # Weekly Increment Report
 
-## Week of: September 23, 2026
+## Week of: September 30, 2026
 
 ## What changed this week
 
-- Created the GitHub repository for the StudySprint Planner project.
-- Updated the project README.md and LICENSE.
-- Set up and ran the React/Vite frontend locally.
-- Modified the starter template from a sightings application into a StudySprint Planner.
-- Replaced the original sample data with academic task data.
-- Added sample tasks with task titles, subjects, descriptions, due dates, and priorities.
-- Updated the mock API to handle study tasks instead of sightings.
-- Created the main StudySprint Planner interface.
-- Added a form for creating new study tasks.
-- Added functionality to display and delete tasks.
-- Added localStorage so tasks can remain saved after refreshing the page.
-- Updated the frontend styling to create a cleaner and more organized StudySprint Planner interface.
-- Configured the frontend for GitHub Pages deployment.
+- Continued development of the StudySprint Planner frontend.
+- Improved the layout and organization of the main StudySprint Planner interface.
+- Refined the task creation form and task display functionality.
+- Improved the handling of study task information, including titles, subjects, descriptions, due dates, priorities, and completion status.
+- Continued testing the task creation, display, deletion, and localStorage functionality.
+- Reviewed the existing frontend code and project structure in preparation for backend development.
+- Started setting up the Express backend for the StudySprint Planner.
+- Created the initial backend project structure and API configuration.
+- Began replacing the temporary mock API approach with the planned Express API.
+- Reviewed the requirements for connecting the application to a PostgreSQL database.
+- Prepared the project structure and environment variables needed for backend and database development.
+- Continued updating the project documentation based on the progress made during Week 2.
 
 ## Why
 
-These changes were made to build the initial frontend of the StudySprint Planner and transform the provided starter template into a functional academic task planner. The goal was to establish the main user interface and basic task-management functionality before starting development of the backend.
+These changes were made to move the StudySprint Planner from a frontend prototype toward a complete full-stack application. After establishing the basic task-management interface during Week 1, the focus for Week 2 was to prepare the backend and database components required by the project. This provides the foundation for storing and managing study tasks through a real API instead of relying only on mock data and localStorage.
 
 ## What broke or what I got stuck on
 
-- I had difficulty understanding the project structure and where each file was supposed to be placed because there were many instructions and folders to work with.
-- I was initially unsure about which files belonged in the public GitHub repository and which files belonged in the private course workspace, particularly the required SECURITY-CHECKLIST.md and REPORT.md.
-- The application initially showed a blank white page after I changed the original template, not until I realized it was because api/index.js was still referencing the old sighting functions.
-- I also encountered a syntax issue with the date formatting in App.jsx, which I had to fix before the application would run properly.
-- I had some difficulty using Git commands because the Vite development server was still running in the terminal, so I had to stop the development server before running Git commands.
+- I initially had difficulty understanding how the Express backend should communicate with the React/Vite frontend.
+- I was unsure about how the PostgreSQL database should be structured and how the task fields from the frontend should correspond to database columns.
+- I encountered some confusion when organizing the frontend and backend files because they use different configurations and dependencies.
+- I had to review the environment variable setup to understand how the frontend and backend should communicate without hardcoding configuration values.
+- Some existing frontend functionality still depended on the mock API, so additional changes were needed before the application could fully transition to the Express backend.
+- I also had to spend additional time understanding how the API routes would handle creating, retrieving, updating, and deleting study tasks.
 
 ## What is left
 
-- Continue improving and testing the frontend.
-- Complete the remaining frontend features and interface improvements.
-- Start developing the Express backend.
-- Set up the PostgreSQL database.
-- Connect the frontend to the backend API.
-- Test the complete frontend and backend system.
-- Deploy the completed application.
-- Complete the remaining project documentation and final requirements.
+- Complete the Express backend implementation.
+- Finalize the PostgreSQL database and task table structure.
+- Implement the required CRUD API endpoints for study tasks.
+- Connect the React frontend to the Express backend.
+- Replace the remaining mock API functionality with the real backend API.
+- Test communication between the frontend, backend, and database.
+- Continue improving the user interface and task-management features.
+- Add and test task completion functionality.
+- Complete the remaining project documentation.
+- Prepare the application for deployment and final testing.
