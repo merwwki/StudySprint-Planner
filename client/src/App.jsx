@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
-import { listSightings, createSighting, deleteSighting } from './api'
+import { listTasks, createTask, deleteTask } from './api'
 import DemoNotice from './components/DemoNotice.jsx'
 
-// A deliberately small working app. Replace all of it with your own project.
-//
-// What is worth keeping is the SHAPE: four states rather than two, a loading
-// message that admits a free-tier server can be slow to wake, and errors that
-// say something rather than rendering an empty list.
-
-const EMPTY_FORM = { place: '', description: '', spookiness: 3 }
+const EMPTY_FORM = {
+  title: '',
+  subject: '',
+  description: '',
+  due_date: '',
+  priority: 'Medium',
+}
 
 export default function App() {
-  const [status, setStatus] = useState('loading')   // loading | ready | error
+  const [status, setStatus] = useState('loading')
   const [rows, setRows] = useState([])
   const [error, setError] = useState(null)
   const [slow, setSlow] = useState(false)
@@ -22,12 +22,10 @@ export default function App() {
     setStatus('loading')
     setError(null)
 
-    // A free-tier API sleeps. If this is taking a while, say so rather than
-    // spinning silently, which looks broken. See page 6.
     const timer = setTimeout(() => setSlow(true), 3000)
 
     try {
-      setRows(await listSightings())
+      setRows(await listTasks())
       setStatus('ready')
     } catch (caught) {
       setError(caught)
@@ -44,15 +42,21 @@ export default function App() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-    if (!form.place.trim()) return
+
+    if (!form.title.trim()) return
 
     setSaving(true)
+
     try {
-      const created = await createSighting({
-        place: form.place.trim(),
+      const created = await createTask({
+        title: form.title.trim(),
+        subject: form.subject.trim(),
         description: form.description.trim(),
-        spookiness: Number(form.spookiness),
+        due_date: form.due_date,
+        priority: form.priority,
+        completed: false,
       })
+
       setRows([created, ...rows])
       setForm(EMPTY_FORM)
     } catch (caught) {
@@ -64,11 +68,13 @@ export default function App() {
 
   async function handleDelete(id) {
     const previous = rows
-    setRows(rows.filter((row) => row.id !== id))   // optimistic
+
+    setRows(rows.filter((row) => row.id !== id))
+
     try {
-      await deleteSighting(id)
+      await deleteTask(id)
     } catch (caught) {
-      setRows(previous)                            // put it back on failure
+      setRows(previous)
       setError(caught)
     }
   }
@@ -76,10 +82,10 @@ export default function App() {
   return (
     <div className="page">
       <header>
-        <h1>HAUnted Sightings</h1>
+        <h1>StudySprint Planner</h1>
         <p className="lede">
-          Replace this with your own project. This one is here so the template
-          has something that works.
+          Plan your tasks, stay organized, and keep track of your academic
+          workload.
         </p>
       </header>
 
@@ -87,58 +93,89 @@ export default function App() {
 
       {error && (
         <p className="error" role="alert">
-          {error.message} <button onClick={load}>Try again</button>
+          {error.message}{' '}
+          <button onClick={load}>Try again</button>
         </p>
       )}
 
       <form onSubmit={handleSubmit} className="card">
-        <h2>Report a sighting</h2>
+        <h2>Add a Task</h2>
 
-        <label htmlFor="place">Place</label>
+        <label htmlFor="title">Task Title</label>
         <input
-          id="place"
-          value={form.place}
-          onChange={(event) => setForm({ ...form, place: event.target.value })}
+          id="title"
+          value={form.title}
+          onChange={(event) =>
+            setForm({ ...form, title: event.target.value })
+          }
           maxLength={120}
           required
         />
 
-        <label htmlFor="description">What happened</label>
+        <label htmlFor="subject">Subject</label>
+        <input
+          id="subject"
+          value={form.subject}
+          onChange={(event) =>
+            setForm({ ...form, subject: event.target.value })
+          }
+          maxLength={120}
+          required
+        />
+
+        <label htmlFor="description">Description</label>
         <textarea
           id="description"
           value={form.description}
-          onChange={(event) => setForm({ ...form, description: event.target.value })}
+          onChange={(event) =>
+            setForm({ ...form, description: event.target.value })
+          }
           maxLength={2000}
           rows={3}
         />
 
-        <label htmlFor="spookiness">Spookiness, 1 to 5</label>
+        <label htmlFor="due_date">Due Date</label>
         <input
-          id="spookiness"
-          type="number"
-          min="1"
-          max="5"
-          value={form.spookiness}
-          onChange={(event) => setForm({ ...form, spookiness: event.target.value })}
+          id="due_date"
+          type="date"
+          value={form.due_date}
+          onChange={(event) =>
+            setForm({ ...form, due_date: event.target.value })
+          }
           required
         />
 
+        <label htmlFor="priority">Priority</label>
+        <select
+          id="priority"
+          value={form.priority}
+          onChange={(event) =>
+            setForm({ ...form, priority: event.target.value })
+          }
+        >
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+
         <button type="submit" disabled={saving}>
-          {saving ? 'Saving...' : 'Add sighting'}
+          {saving ? 'Saving...' : 'Add Task'}
         </button>
       </form>
 
-      {/* Four states. Empty and error are different things and must not look
-          the same: an empty list means "nothing here yet", an error means
-          "we could not find out". */}
       {status === 'loading' && (
         <p className="muted">
-          Loading{slow ? '. The server may be waking up, which can take up to a minute.' : '...'}
+          Loading
+          {slow
+            ? '. The server may be waking up, which can take up to a minute.'
+            : '...'}
         </p>
       )}
 
       {status === 'ready' && rows.length === 0 && (
-        <p className="muted">No sightings reported yet. Add the first one above.</p>
+        <p className="muted">
+          No tasks yet. Add your first task above.
+        </p>
       )}
 
       {status === 'ready' && rows.length > 0 && (
@@ -146,19 +183,31 @@ export default function App() {
           {rows.map((row) => (
             <li key={row.id} className="card">
               <div className="row-head">
-                <h3>{row.place}</h3>
-                <span className="spooky" aria-label={`Spookiness ${row.spookiness} of 5`}>
-                  {'*'.repeat(row.spookiness)}
-                </span>
+                <h3>{row.title}</h3>
+                <span className="spooky">{row.priority}</span>
               </div>
-              {row.description
-                ? <p>{row.description}</p>
-                : <p className="muted">No description given.</p>}
+
+              <p>
+                <strong>Subject:</strong> {row.subject}
+              </p>
+
+              {row.description ? (
+                <p>{row.description}</p>
+              ) : (
+                <p className="muted">No description given.</p>
+              )}
+
               <footer>
-                <time dateTime={row.reported_at}>
-                  {new Date(row.reported_at).toLocaleString()}
+                <time dateTime={row.due_date}>
+                  Due:{' '}
+                  {new Date(
+                    row.due_date + 'T00:00:00'
+                  ).toLocaleDateString()}
                 </time>
-                <button onClick={() => handleDelete(row.id)}>Delete</button>
+
+                <button onClick={() => handleDelete(row.id)}>
+                  Delete
+                </button>
               </footer>
             </li>
           ))}
