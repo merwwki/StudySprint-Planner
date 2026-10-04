@@ -15,19 +15,25 @@ const EMPTY_FORM = {
   priority: 'Medium',
 }
 
+function dateForInput(value) {
+  if (!value) return ''
+  return String(value).slice(0, 10)
+}
+
 export default function Tasks() {
   const [status, setStatus] = useState('loading')
   const [rows, setRows] = useState([])
   const [error, setError] = useState(null)
   const [slow, setSlow] = useState(false)
+
   const [form, setForm] = useState(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [showForm, setShowForm] = useState(false)
+  const [editingTask, setEditingTask] = useState(null)
+
   const [filter, setFilter] = useState('all')
   const [updatingId, setUpdatingId] = useState(null)
 
-  // Stores the task waiting to be deleted.
-  // If this is not null, the confirmation modal is shown.
   const [taskToDelete, setTaskToDelete] = useState(null)
   const [deleting, setDeleting] = useState(false)
 
@@ -54,6 +60,42 @@ export default function Tasks() {
     load()
   }, [])
 
+  function openAddForm() {
+    setEditingTask(null)
+    setForm(EMPTY_FORM)
+    setShowForm(true)
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
+  function openEditForm(task) {
+    setEditingTask(task)
+
+    setForm({
+      title: task.title ?? '',
+      subject: task.subject ?? '',
+      description: task.description ?? '',
+      due_date: dateForInput(task.due_date),
+      priority: task.priority ?? 'Medium',
+    })
+
+    setShowForm(true)
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
+  function handleCancel() {
+    setForm(EMPTY_FORM)
+    setEditingTask(null)
+    setShowForm(false)
+  }
+
   async function handleSubmit(event) {
     event.preventDefault()
 
@@ -62,18 +104,37 @@ export default function Tasks() {
     setSaving(true)
     setError(null)
 
-    try {
-      const created = await createTask({
-        title: form.title.trim(),
-        subject: form.subject.trim(),
-        description: form.description.trim(),
-        due_date: form.due_date,
-        priority: form.priority,
-        completed: false,
-      })
+    const input = {
+      title: form.title.trim(),
+      subject: form.subject.trim(),
+      description: form.description.trim(),
+      due_date: form.due_date,
+      priority: form.priority,
+    }
 
-      setRows((currentRows) => [created, ...currentRows])
+    try {
+      if (editingTask) {
+        const updated = await updateTask(editingTask.id, {
+          ...input,
+          completed: editingTask.completed,
+        })
+
+        setRows((currentRows) =>
+          currentRows.map((row) =>
+            row.id === editingTask.id ? updated : row
+          )
+        )
+      } else {
+        const created = await createTask({
+          ...input,
+          completed: false,
+        })
+
+        setRows((currentRows) => [created, ...currentRows])
+      }
+
       setForm(EMPTY_FORM)
+      setEditingTask(null)
       setShowForm(false)
     } catch (caught) {
       setError(caught)
@@ -91,7 +152,7 @@ export default function Tasks() {
         title: task.title,
         subject: task.subject,
         description: task.description ?? '',
-        due_date: task.due_date.slice(0, 10),
+        due_date: dateForInput(task.due_date),
         priority: task.priority,
         completed: !task.completed,
       })
@@ -121,7 +182,6 @@ export default function Tasks() {
     if (!taskToDelete) return
 
     const task = taskToDelete
-    const previous = rows
 
     setDeleting(true)
     setError(null)
@@ -135,16 +195,10 @@ export default function Tasks() {
 
       setTaskToDelete(null)
     } catch (caught) {
-      setRows(previous)
       setError(caught)
     } finally {
       setDeleting(false)
     }
-  }
-
-  function handleCancel() {
-    setForm(EMPTY_FORM)
-    setShowForm(false)
   }
 
   const filteredRows = useMemo(() => {
@@ -170,6 +224,7 @@ export default function Tasks() {
         <div>
           <p className="eyebrow">TASK MANAGER</p>
           <h1>My Tasks</h1>
+
           <p className="lede">
             Organize your assignments, activities, and study deadlines.
           </p>
@@ -178,7 +233,7 @@ export default function Tasks() {
         <button
           type="button"
           className="add-task-button"
-          onClick={() => setShowForm((current) => !current)}
+          onClick={showForm ? handleCancel : openAddForm}
         >
           {showForm ? 'Close' : '+ Add Task'}
         </button>
@@ -187,6 +242,7 @@ export default function Tasks() {
       {error && (
         <div className="error" role="alert">
           <span>{error.message}</span>{' '}
+
           <button type="button" onClick={load}>
             Try again
           </button>
@@ -197,26 +253,35 @@ export default function Tasks() {
         <form onSubmit={handleSubmit} className="card task-form">
           <div className="form-heading">
             <div>
-              <p className="eyebrow">NEW TASK</p>
-              <h2>Add a Task</h2>
+              <p className="eyebrow">
+                {editingTask ? 'EDIT TASK' : 'NEW TASK'}
+              </p>
+
+              <h2>
+                {editingTask ? 'Edit Task' : 'Add a Task'}
+              </h2>
             </div>
 
             <button
               type="button"
               className="close-form-button"
               onClick={handleCancel}
-              aria-label="Close add task form"
+              aria-label="Close task form"
             >
               ×
             </button>
           </div>
 
           <label htmlFor="title">Task Title</label>
+
           <input
             id="title"
             value={form.title}
             onChange={(event) =>
-              setForm({ ...form, title: event.target.value })
+              setForm({
+                ...form,
+                title: event.target.value,
+              })
             }
             maxLength={120}
             placeholder="e.g. Finish database assignment"
@@ -224,11 +289,15 @@ export default function Tasks() {
           />
 
           <label htmlFor="subject">Subject</label>
+
           <input
             id="subject"
             value={form.subject}
             onChange={(event) =>
-              setForm({ ...form, subject: event.target.value })
+              setForm({
+                ...form,
+                subject: event.target.value,
+              })
             }
             maxLength={120}
             placeholder="e.g. Database Systems"
@@ -236,11 +305,15 @@ export default function Tasks() {
           />
 
           <label htmlFor="description">Description</label>
+
           <textarea
             id="description"
             value={form.description}
             onChange={(event) =>
-              setForm({ ...form, description: event.target.value })
+              setForm({
+                ...form,
+                description: event.target.value,
+              })
             }
             maxLength={2000}
             rows={3}
@@ -249,25 +322,37 @@ export default function Tasks() {
 
           <div className="form-row">
             <div className="form-field">
-              <label htmlFor="due_date">Due Date</label>
+              <label htmlFor="due_date">
+                Due Date
+              </label>
+
               <input
                 id="due_date"
                 type="date"
                 value={form.due_date}
                 onChange={(event) =>
-                  setForm({ ...form, due_date: event.target.value })
+                  setForm({
+                    ...form,
+                    due_date: event.target.value,
+                  })
                 }
                 required
               />
             </div>
 
             <div className="form-field">
-              <label htmlFor="priority">Priority</label>
+              <label htmlFor="priority">
+                Priority
+              </label>
+
               <select
                 id="priority"
                 value={form.priority}
                 onChange={(event) =>
-                  setForm({ ...form, priority: event.target.value })
+                  setForm({
+                    ...form,
+                    priority: event.target.value,
+                  })
                 }
               >
                 <option value="High">High</option>
@@ -286,8 +371,15 @@ export default function Tasks() {
               Cancel
             </button>
 
-            <button type="submit" disabled={saving}>
-              {saving ? 'Saving...' : 'Add Task'}
+            <button
+              type="submit"
+              disabled={saving}
+            >
+              {saving
+                ? 'Saving...'
+                : editingTask
+                  ? 'Save Changes'
+                  : 'Add Task'}
             </button>
           </div>
         </form>
@@ -297,16 +389,21 @@ export default function Tasks() {
         <div className="task-toolbar">
           <div>
             <h2>Your Tasks</h2>
+
             <p className="muted">
-              {rows.length} total · {activeCount} active · {completedCount}{' '}
-              completed
+              {rows.length} total · {activeCount} active ·{' '}
+              {completedCount} completed
             </p>
           </div>
 
           <div className="filter-tabs">
             <button
               type="button"
-              className={filter === 'all' ? 'filter-active' : ''}
+              className={
+                filter === 'all'
+                  ? 'filter-active'
+                  : ''
+              }
               onClick={() => setFilter('all')}
             >
               All
@@ -314,7 +411,11 @@ export default function Tasks() {
 
             <button
               type="button"
-              className={filter === 'active' ? 'filter-active' : ''}
+              className={
+                filter === 'active'
+                  ? 'filter-active'
+                  : ''
+              }
               onClick={() => setFilter('active')}
             >
               Active
@@ -322,7 +423,11 @@ export default function Tasks() {
 
             <button
               type="button"
-              className={filter === 'completed' ? 'filter-active' : ''}
+              className={
+                filter === 'completed'
+                  ? 'filter-active'
+                  : ''
+              }
               onClick={() => setFilter('completed')}
             >
               Completed
@@ -339,120 +444,151 @@ export default function Tasks() {
           </p>
         )}
 
-        {status === 'ready' && filteredRows.length === 0 && (
-          <div className="empty-state card">
-            <h3>
-              {filter === 'completed'
-                ? 'No completed tasks'
-                : filter === 'active'
-                  ? 'No active tasks'
-                  : 'No tasks yet'}
-            </h3>
+        {status === 'ready' &&
+          filteredRows.length === 0 && (
+            <div className="empty-state card">
+              <h3>
+                {filter === 'completed'
+                  ? 'No completed tasks'
+                  : filter === 'active'
+                    ? 'No active tasks'
+                    : 'No tasks yet'}
+              </h3>
 
-            <p className="muted">
-              {filter === 'all'
-                ? 'Add your first academic task to start planning your workload.'
-                : 'There are no tasks in this category.'}
-            </p>
+              <p className="muted">
+                {filter === 'all'
+                  ? 'Add your first academic task to start planning your workload.'
+                  : 'There are no tasks in this category.'}
+              </p>
 
-            {filter === 'all' && (
-              <button
-                type="button"
-                onClick={() => setShowForm(true)}
-              >
-                + Add Your First Task
-              </button>
-            )}
-          </div>
-        )}
+              {filter === 'all' && (
+                <button
+                  type="button"
+                  onClick={openAddForm}
+                >
+                  + Add Your First Task
+                </button>
+              )}
+            </div>
+          )}
 
-        {status === 'ready' && filteredRows.length > 0 && (
-          <ul className="list task-list">
-            {filteredRows.map((row) => (
-              <li
-                key={row.id}
-                className={`card task-card ${
-                  row.completed ? 'task-completed' : ''
-                }`}
-              >
-                <div className="row-head">
-                  <div>
-                    <p className="task-subject">{row.subject}</p>
-                    <h3>{row.title}</h3>
-                  </div>
+        {status === 'ready' &&
+          filteredRows.length > 0 && (
+            <ul className="list task-list">
+              {filteredRows.map((row) => (
+                <li
+                  key={row.id}
+                  className={`card task-card ${
+                    row.completed
+                      ? 'task-completed'
+                      : ''
+                  }`}
+                >
+                  <div className="row-head">
+                    <div>
+                      <p className="task-subject">
+                        {row.subject}
+                      </p>
 
-                  <span
-                    className={`priority-badge priority-${row.priority.toLowerCase()}`}
-                  >
-                    {row.priority}
-                  </span>
-                </div>
+                      <h3>{row.title}</h3>
+                    </div>
 
-                {row.description ? (
-                  <p className="task-description">
-                    {row.description}
-                  </p>
-                ) : (
-                  <p className="muted">No description given.</p>
-                )}
-
-                <footer className="task-footer">
-                  <div className="task-date">
-                    <span className="task-status">
-                      {row.completed ? 'Completed' : 'Active'}
+                    <span
+                      className={`priority-badge priority-${row.priority.toLowerCase()}`}
+                    >
+                      {row.priority}
                     </span>
+                  </div>
 
-                    <time dateTime={row.due_date}>
-                      Due:{' '}
-                      {new Date(row.due_date).toLocaleDateString(
-                        undefined,
-                        {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
+                  {row.description ? (
+                    <p className="task-description">
+                      {row.description}
+                    </p>
+                  ) : (
+                    <p className="muted">
+                      No description given.
+                    </p>
+                  )}
+
+                  <footer className="task-footer">
+                    <div className="task-date">
+                      <span className="task-status">
+                        {row.completed
+                          ? 'Completed'
+                          : 'Active'}
+                      </span>
+
+                      <time dateTime={row.due_date}>
+                        Due:{' '}
+                        {new Date(
+                          row.due_date
+                        ).toLocaleDateString(
+                          undefined,
+                          {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          }
+                        )}
+                      </time>
+                    </div>
+
+                    <div className="task-actions">
+                      <button
+                        type="button"
+                        className="edit-button"
+                        onClick={() =>
+                          openEditForm(row)
                         }
-                      )}
-                    </time>
-                  </div>
+                      >
+                        Edit
+                      </button>
 
-                  <div className="task-actions">
-                    <button
-                      type="button"
-                      className={
-                        row.completed
-                          ? 'secondary-button'
-                          : 'complete-button'
-                      }
-                      disabled={updatingId === row.id}
-                      onClick={() => handleToggleComplete(row)}
-                    >
-                      {updatingId === row.id
-                        ? 'Saving...'
-                        : row.completed
-                          ? 'Reopen'
-                          : '✓ Complete'}
-                    </button>
+                      <button
+                        type="button"
+                        className={
+                          row.completed
+                            ? 'secondary-button'
+                            : 'complete-button'
+                        }
+                        disabled={
+                          updatingId === row.id
+                        }
+                        onClick={() =>
+                          handleToggleComplete(row)
+                        }
+                      >
+                        {updatingId === row.id
+                          ? 'Saving...'
+                          : row.completed
+                            ? 'Reopen'
+                            : '✓ Complete'}
+                      </button>
 
-                    <button
-                      type="button"
-                      className="delete-button"
-                      onClick={() => requestDelete(row)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </footer>
-              </li>
-            ))}
-          </ul>
-        )}
+                      <button
+                        type="button"
+                        className="delete-button"
+                        onClick={() =>
+                          requestDelete(row)
+                        }
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </footer>
+                </li>
+              ))}
+            </ul>
+          )}
       </section>
 
       {taskToDelete && (
         <div
           className="modal-backdrop"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
+            if (
+              event.target === event.currentTarget
+            ) {
               cancelDelete()
             }
           }}
@@ -465,11 +601,16 @@ export default function Tasks() {
           >
             <div className="delete-icon">!</div>
 
-            <h2 id="delete-title">Delete this task?</h2>
+            <h2 id="delete-title">
+              Delete this task?
+            </h2>
 
             <p>
               Are you sure you want to delete{' '}
-              <strong>"{taskToDelete.title}"</strong>?
+              <strong>
+                "{taskToDelete.title}"
+              </strong>
+              ?
             </p>
 
             <p className="modal-note">
@@ -492,7 +633,9 @@ export default function Tasks() {
                 onClick={confirmDelete}
                 disabled={deleting}
               >
-                {deleting ? 'Deleting...' : 'Delete Task'}
+                {deleting
+                  ? 'Deleting...'
+                  : 'Delete Task'}
               </button>
             </div>
           </div>
