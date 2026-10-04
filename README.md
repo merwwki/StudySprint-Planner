@@ -326,7 +326,9 @@ The application is currently designed as a single-user student planner and does 
 
 ## Author
 
-Jeanne Clarisse Bermudo  
+## Author
+
+Developed as a final project for 6APSI.
 Course and Section: Computer Science | CS - 401
 
 ## AI use

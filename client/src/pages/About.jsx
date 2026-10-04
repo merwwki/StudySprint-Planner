@@ -37,7 +37,7 @@ export default function About() {
 
       <section className="creator-card">
         <p className="eyebrow">CREATOR</p>
-        <h2>Developed by Jeanne Clarisse Bermudo</h2>
+        <h2>Developed as a student final project.</h2>
         <p>
           StudySprint Planner was created as an academic project to provide
           students with a simple and organized way to manage their school
