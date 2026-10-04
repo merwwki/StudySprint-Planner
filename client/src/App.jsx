@@ -200,9 +200,7 @@ export default function App() {
               <footer>
                 <time dateTime={row.due_date}>
                   Due:{' '}
-                  {new Date(
-                    row.due_date + 'T00:00:00'
-                  ).toLocaleDateString()}
+                  {new Date(row.due_date).toLocaleDateString()}
                 </time>
 
                 <button onClick={() => handleDelete(row.id)}>
