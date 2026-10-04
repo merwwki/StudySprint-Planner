@@ -1,173 +1,349 @@
 # StudySprint Planner
 
-A lightweight academic task planner that helps students organize assignments, deadlines, subjects, and priorities in one place. It is designed for students who want a simple way to keep track of their academic workload.
+A lightweight academic task planner that helps students organize assignments, deadlines, subjects, and priorities in one place. It is designed for students who want a simple and organized way to keep track of their academic workload.
 
-**Live site:** https://merwwki.github.io/StudySprint-Planner/
-**API:** https://your-api.onrender.com/healthz
+**Live site:** https://merwwki.github.io/StudySprint-Planner/  
+**API:** https://studysprint-api-5bsr.onrender.com/healthz  
 **Demo video:** (link)
-
-> **This deployment is running in demo mode.** The interface is real; the backend
-> is simulated in your browser so the site works without a server. See
-> [Demo mode](#demo-mode) below. Delete this quote once your API is live.
 
 ![A screenshot of the main screen](docs/assets/screenshot.png)
 
 ## What it does
 
-- Add a task with a subject, due date, and priority
-- See every task in one list, sorted by what's due soonest
+- Add academic tasks with a title, subject, description, due date, and priority
+- View and organize saved tasks
+- Edit existing tasks
 - Filter tasks by all, active, or completed
-- Mark a task complete, or delete it once it's no longer needed
+- Mark tasks as completed and reopen completed tasks
+- Delete tasks with a confirmation message
+- View task information and upcoming deadlines through the dashboard
+- Store task information in a PostgreSQL database
 
 ## 1. Overview
-StudySprint Planner is a web-based task management application for students. It allows users to create academic tasks, provide information such as the subject, description, due date, and priority, view their tasks, and delete tasks when they are no longer needed. The current version focuses on establishing the frontend and basic task-management functionality. A real Express API and PostgreSQL database are planned for a later development stage.
+
+StudySprint Planner is a web-based task management application designed for students. It allows users to create and organize academic tasks by providing information such as the task title, subject, description, due date, and priority.
+
+The application includes multiple pages for easier navigation. The Dashboard provides an overview of academic tasks, the Tasks page provides the main task-management functions, and the About page provides information about the application and its developer.
+
+StudySprint Planner implements CRUD functionality. Users can create new tasks, read or view existing tasks, update tasks by editing their information or changing their completion status, and delete tasks when they are no longer needed.
+
+Unlike the initial version of the project, the completed application uses a real Express API and PostgreSQL database. The frontend communicates with the deployed backend, while task data is stored in a Neon PostgreSQL database.
 
 ## Built with
 
-React and Vite on the front end, Express and PostgreSQL on the back end. The
-client is on GitHub Pages, the API on (host), the database on (host).
+StudySprint Planner uses React and Vite for the frontend, Express.js and Node.js for the backend, and PostgreSQL for data storage.
+
+The completed application is deployed using:
+
+- **Frontend:** GitHub Pages
+- **Backend API:** Render
+- **Database:** Neon PostgreSQL
+
+React Router is used for navigation between the Dashboard, Tasks, and About pages.
 
 ## 2. Setup and installation
 
+Before running the complete application locally, make sure the following are installed:
+
+- Node.js
+- npm
+- PostgreSQL
+
+Clone or download the StudySprint Planner repository and open the project directory.
+
+The project contains separate `client` and `server` directories for the frontend and backend.
 
 ## Demo mode
 
-This repository can run two ways, chosen by one environment variable at **build**
-time.
+StudySprint Planner supports both a mock API and a real API through an environment variable.
 
-**Demo mode is the default.** Only the exact string `false` turns it off, so a
-forgotten or mistyped variable leaves you on the simulated backend with a visible
-notice rather than on a silently broken build.
+The mock API was used during the earlier development stage so that the frontend could be developed before the backend and PostgreSQL database were fully connected.
 
 | `VITE_USE_MOCK_API` | What happens |
 | --- | --- |
-| unset, or `true` | The client answers its own requests from `localStorage`. No server, no database, nothing shared between visitors. This is what the template ships with, so the GitHub Pages link works on day one. |
-| `false` | The client calls the Express API at `VITE_API_BASE_URL`, which reads and writes real PostgreSQL. |
+| unset, or `true` | The client uses the mock API and stores task information in the browser using `localStorage`. |
+| `false` | The client communicates with the Express API, which reads and writes task information in PostgreSQL. |
 
-**Demo mode is a starting point and a fallback, not a finished project.** Your
-finals submission is all three pieces deployed and talking to each other. Demo
-mode is there so you can build the interface in week one before the API exists,
-and so you have something to show if a free tier is asleep during your demo.
+The **final deployed version of StudySprint Planner uses the real API** rather than demo mode.
 
-GitHub Pages serves files and cannot run Node, so the API and the database can
-never live there. They go somewhere else:
+The frontend is hosted through GitHub Pages. Since GitHub Pages only hosts static content, the Express backend is hosted separately through Render and the PostgreSQL database is hosted through Neon.
 
-| Piece | Options |
+| Piece | Service used |
 | --- | --- |
-| **API** | Render, Railway, Fly.io, Koyeb, a VPS, or [self-hosted behind a tunnel](../content/extending-your-app/11-self-hosting.md) |
-| **Database** | Neon, Supabase, Railway, Aiven, or your own PostgreSQL |
+| **Frontend** | GitHub Pages |
+| **API** | Render |
+| **Database** | Neon PostgreSQL |
 
-`content/extending-your-app/` in your course workspace walks through all of it.
-Page 10 is the decision page if you do not know which to pick.
+Demo mode remains available in the project as a development and fallback option.
 
 ## Running it yourself
 
-**The client only, in demo mode.** No database needed.
+**The client only, in demo mode.**
 
-    cd client
-    npm install
-    cp .env.example .env        # VITE_USE_MOCK_API stays true
-    npm run dev                 # http://localhost:5173
+No PostgreSQL database or Express server is required when using the mock API.
 
-**The whole stack.** Needs a PostgreSQL, either local or hosted.
+```bash
+cd client
+npm install
+cp .env.example .env
+npm run dev
+```
 
-    # 1. the database
-    docker run --name studysprint-pg -e POSTGRES_PASSWORD=devpassword \
-      -e POSTGRES_DB=studysprint -p 5432:5432 -d postgres:17
+Keep:
 
-    # 2. the API
-    cd server
-    npm install
-    cp .env.example .env        # check DATABASE_URL
-    npm run db:reset            # creates the tables and adds sample rows
-    npm run dev                 # http://localhost:3000
+```env
+VITE_USE_MOCK_API=true
+```
 
-    # 3. the client, in another terminal
-    cd client
-    npm install
-    cp .env.example .env
-    # set VITE_USE_MOCK_API=false
-    npm run dev
+Vite will display the local development address in the terminal.
 
-Check the API on its own before you blame the client:
+**The whole stack.**
 
-    curl http://localhost:3000/healthz     # is the process alive
-    curl http://localhost:3000/readyz      # is the database reachable
-    curl http://localhost:3000/api/tasks
+The complete version requires PostgreSQL and the Express API.
+
+First, configure the backend:
+
+```bash
+cd server
+npm install
+cp .env.example .env
+```
+
+Update `server/.env` with the required PostgreSQL connection information.
+
+Run the database schema:
+
+```bash
+npm run db:schema
+```
+
+If sample task data is needed, run:
+
+```bash
+npm run db:seed
+```
+
+Start the backend:
+
+```bash
+npm run dev
+```
+
+The development API normally runs at:
+
+```text
+http://localhost:3000
+```
+
+In another terminal, configure the frontend:
+
+```bash
+cd client
+npm install
+cp .env.example .env
+```
+
+Set the client to use the real API:
+
+```env
+VITE_USE_MOCK_API=false
+VITE_API_BASE_URL=http://localhost:3000
+```
+
+Then start the frontend:
+
+```bash
+npm run dev
+```
+
+Check the API independently using:
+
+```bash
+curl http://localhost:3000/healthz
+curl http://localhost:3000/readyz
+curl http://localhost:3000/api/tasks
+```
+
+The `/healthz` endpoint checks whether the Express server is running, while `/readyz` checks whether the server can communicate with the PostgreSQL database.
 
 ## Environment variables
 
-None of these are committed. `.env.example` in each folder lists them with
-placeholder values.
+Environment variables containing actual credentials are not committed to the repository. `.env.example` files are provided as templates.
 
 | Name | Where | What it is |
 | --- | --- | --- |
-| `DATABASE_URL` | server | PostgreSQL connection string. Contains a password |
-| `CORS_ORIGINS` | server | comma-separated origins allowed to call the API |
-| `NODE_ENV` | server | `production` on your host |
-| `PORT` | server | **set by the host**, do not set it yourself |
-| `VITE_USE_MOCK_API` | client, at build time | only `false` turns demo mode off; unset means on |
-| `VITE_API_BASE_URL` | client, at build time | your API's public URL, no trailing slash |
+| `DATABASE_URL` | server | PostgreSQL connection string used by the Express backend |
+| `CORS_ORIGINS` | server | Origins allowed to communicate with the API |
+| `NODE_ENV` | server | Application environment, such as `production` |
+| `PORT` | server | Server port; the production host can provide this automatically |
+| `VITE_USE_MOCK_API` | client, at build time | Determines whether the client uses the mock API or real API |
+| `VITE_API_BASE_URL` | client, at build time | Public URL of the Express API |
 
-Every `VITE_` value is compiled into the built JavaScript and is **public**.
-Never put a key, a password or a connection string in one.
+The real `.env` files are excluded from Git using `.gitignore`.
+
+Values beginning with `VITE_` are compiled into the frontend and are therefore public. Passwords, database connection strings, and other private credentials must never be placed in a `VITE_` environment variable.
 
 ## Deploying
 
-**Client, to GitHub Pages.** Already wired up in
-`.github/workflows/deploy-pages.yml`. Two one-time steps:
+**Client, to GitHub Pages.**
 
-1. **Settings > Pages > Build and deployment > Source: GitHub Actions.** Without
-   this the workflow goes green and publishes nothing.
-2. Nothing else, until your API is live. Demo mode is the default, so the first
-   deploy works on its own. When the API is up, add `VITE_USE_MOCK_API` = `false`
-   and `VITE_API_BASE_URL` under **Settings > Secrets and variables > Actions >
-   Variables**, then re-run the workflow.
+The React/Vite frontend is deployed through GitHub Pages using the project's GitHub Actions workflow.
 
-The repository must be **public** for Pages to serve it on a free account.
+The production frontend is available at:
 
-**API and database.** Not automated here, because most hosts deploy straight from
-your repository with no workflow at all. Point your host at the `server/` folder,
-set the environment variables in its dashboard, and run `server/db/schema.sql`
-once against the hosted database.
+```text
+https://merwwki.github.io/StudySprint-Planner/
+```
+
+The deployed client is configured with:
+
+```env
+VITE_USE_MOCK_API=false
+```
+
+and uses the public Render API as its `VITE_API_BASE_URL`.
+
+The application uses hash-based routing to support navigation on GitHub Pages. This allows pages such as Tasks and About to continue working when the browser is refreshed.
+
+Example routes include:
+
+```text
+#/tasks
+#/about
+```
+
+**API and database.**
+
+The Express API is deployed as a Render Web Service.
+
+The production API is available at:
+
+```text
+https://studysprint-api-5bsr.onrender.com
+```
+
+The production PostgreSQL database is hosted through Neon.
+
+The Render service contains the production `DATABASE_URL`, `CORS_ORIGINS`, and other required server environment variables. The database credentials are not stored in the repository or frontend.
+
+The frontend sends HTTPS requests to the Render API, and the Render API communicates with Neon PostgreSQL.
 
 ## Project structure
 
-    client/          React front end, built by Vite
-      src/api/       ONE interface, two implementations, chosen by a variable
-      src/components/
-    server/          Express API
-      db/            pool, schema.sql, seed.sql, and a runner for them
-    compose.yml      only if you self-host
-    docs/            your planning documents and weekly reports
+```text
+StudySprint-Planner/
+│
+├── client/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── styles.css
+│   ├── .env.example
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+│
+├── server/
+│   ├── db/
+│   ├── .env.example
+│   ├── server.js
+│   ├── tasksRepo.js
+│   └── package.json
+│
+├── docs/
+├── journal/
+├── project/
+├── AI-USAGE.md
+├── compose.yml
+├── LICENSE
+├── README.md
+├── security-checklist.md
+└── START-HERE.md
+```
+
+The `client/` directory contains the React frontend.
+
+The `server/` directory contains the Express backend and PostgreSQL-related files.
+
+The `docs/` directory contains the project planning and documentation files.
+
+The `journal/` directory contains weekly reflection journals.
+
+The `project/` directory contains project increment reports.
 
 ## Architecture
 
-The client (React, built by Vite) is a static site on GitHub Pages. It calls an Express API over HTTPS at the URL above; the API is the only thing that talks to PostgreSQL directly, using parameterized queries. The application is designed as a single-user student planner, so it does not include authentication or user accounts. The client communicates with an Express API, which handles task data stored in PostgreSQL.
+StudySprint Planner uses a frontend, backend, and database architecture.
+
+```text
+Student
+   |
+   v
+React + Vite Frontend
+GitHub Pages
+   |
+   | HTTPS requests
+   v
+Express API
+Render
+   |
+   | PostgreSQL connection
+   v
+PostgreSQL Database
+Neon
+```
+
+The React frontend handles the user interface and sends requests to the Express API.
+
+The Express API handles operations involving task data. It communicates with PostgreSQL to create, retrieve, update, and delete tasks.
+
+The browser does not communicate directly with PostgreSQL. Database credentials remain on the server side.
+
+The main task operations are:
+
+| CRUD Operation | StudySprint Function |
+| --- | --- |
+| Create | Add Task |
+| Read | View Tasks |
+| Update | Edit Task, Complete Task, Reopen Task |
+| Delete | Delete Task |
+
+The application is currently designed as a single-user student planner and does not include authentication or individual user accounts.
 
 ## What I would do next
 
-- Add search and filtering by subject or priority.
-- Recurring tasks, so a weekly reading doesn't need re-adding every week.
-- A "due soon" view, since nothing currently surfaces what's due today versus next month.
-
+- Add user accounts and authentication so multiple students can have separate task lists.
+- Add search functionality for task titles and subjects.
+- Add additional filtering by subject or priority.
+- Add a calendar view for academic deadlines.
+- Add deadline reminders and notifications.
+- Add recurring tasks for weekly academic activities.
+- Add additional dashboard statistics and progress information.
+- Add file attachments for assignments and academic resources.
 
 ## Author
 
-Jeanne Clarisse Bermudo
+Jeanne Clarisse Bermudo  
 Course and Section: Computer Science | CS - 401
 
 ## AI use
 
-I used AI while building this — full disclosure is in AI-USAGE.md.
+I used AI tools while developing StudySprint Planner. Full disclosure of AI assistance is available in `AI-USAGE.md`.
+
+AI assistants used:
+
+- ChatGPT
+- Google Gemini
+
+AI assistance was used for development guidance, troubleshooting, code explanation, debugging support, and documentation assistance.
+
+[AI-USAGE.md](AI-USAGE.md)
 
 ![Built with AI assistance](https://img.shields.io/badge/built%20with-AI%20assistance-0b5fff)
 
-- the badge above, or one you like better
-- AI assistant used: ChatGPT, Google Gemini
-- Full account:[AI-USAGE.md](AI-USAGE.md)
-
-
 ## Licence
 
-MIT, see [LICENSE](LICENSE). Put your own name in it.
+MIT, see [LICENSE](LICENSE).
