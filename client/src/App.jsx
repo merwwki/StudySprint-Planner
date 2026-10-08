@@ -4,7 +4,7 @@ import Dashboard from './pages/Dashboard.jsx'
 import Tasks from './pages/Tasks.jsx'
 import About from './pages/About.jsx'
 
-const ACCESS_PASSWORD = 'StudySprint2026'
+const ACCESS_PASSWORD = import.meta.env.VITE_ACCESS_PASSWORD
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(
