@@ -10,7 +10,7 @@
 
 import seed from './seed.json'
 
-const KEY = 'final-project:tasks'
+const KEY = 'studysprint-planner:tasks'
 
 // A real network is not instant. Keeping this delay is what forces you to build
 // a loading state now, while it is cheap, instead of discovering you need one
