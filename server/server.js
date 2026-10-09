@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { pool } from './db/pool.js'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import * as tasks from './tasksRepo.js'
 
 const app = express()
@@ -11,8 +12,130 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .map((origin) => origin.trim())
   .filter(Boolean)
 
-app.use(cors({ origin: allowedOrigins }))
+app.use(cors({
+  origin: allowedOrigins,
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}))
 app.use(express.json({ limit: '100kb' }))
+
+
+// Server-side authentication. Secrets belong in server/.env or host settings.
+const TOKEN_LIFETIME_SECONDS = 60 * 60 * 8
+const failedLogins = new Map()
+const LOGIN_WINDOW_MS = 15 * 60 * 1000
+const MAX_FAILED_LOGINS = 10
+
+function configuredAuth() {
+  return (
+    typeof process.env.APP_PASSWORD === 'string' &&
+    process.env.APP_PASSWORD.length > 0 &&
+    typeof process.env.AUTH_SECRET === 'string' &&
+    process.env.AUTH_SECRET.length >= 32
+  )
+}
+
+function safeStringEqual(left, right) {
+  const leftHash = createHmac('sha256', 'studysprint-compare').update(left).digest()
+  const rightHash = createHmac('sha256', 'studysprint-compare').update(right).digest()
+  return timingSafeEqual(leftHash, rightHash)
+}
+
+function signToken(payload) {
+  const encoded = Buffer.from(JSON.stringify(payload)).toString('base64url')
+  const signature = createHmac('sha256', process.env.AUTH_SECRET)
+    .update(encoded)
+    .digest('base64url')
+  return `${encoded}.${signature}`
+}
+
+function verifyToken(token) {
+  if (typeof token !== 'string') return false
+
+  const parts = token.split('.')
+  if (parts.length !== 2) return false
+
+  const [encoded, suppliedSignature] = parts
+  const expectedSignature = createHmac('sha256', process.env.AUTH_SECRET)
+    .update(encoded)
+    .digest()
+
+  let actualSignature
+  try {
+    actualSignature = Buffer.from(suppliedSignature, 'base64url')
+  } catch {
+    return false
+  }
+
+  if (
+    actualSignature.length !== expectedSignature.length ||
+    !timingSafeEqual(actualSignature, expectedSignature)
+  ) {
+    return false
+  }
+
+  try {
+    const payload = JSON.parse(Buffer.from(encoded, 'base64url').toString('utf8'))
+    return payload.sub === 'planner-user' &&
+      Number.isInteger(payload.exp) &&
+      payload.exp > Math.floor(Date.now() / 1000)
+  } catch {
+    return false
+  }
+}
+
+function requireAuth(request, response, next) {
+  if (!configuredAuth()) {
+    return response.status(503).json({ error: 'Authentication is not configured' })
+  }
+
+  const authorization = request.get('authorization') || ''
+  const match = /^Bearer ([^\s]+)$/.exec(authorization)
+
+  if (!match || !verifyToken(match[1])) {
+    return response.status(401).json({ error: 'Authentication required' })
+  }
+
+  next()
+}
+
+app.post('/api/login', (request, response) => {
+  if (!configuredAuth()) {
+    return response.status(503).json({ error: 'Authentication is not configured' })
+  }
+
+  const now = Date.now()
+  const key = request.ip
+  let record = failedLogins.get(key)
+
+  if (!record || now - record.startedAt >= LOGIN_WINDOW_MS) {
+    record = { startedAt: now, count: 0 }
+    failedLogins.set(key, record)
+  }
+
+  if (record.count >= MAX_FAILED_LOGINS) {
+    return response.status(429).json({
+      error: 'Too many login attempts. Please try again in 15 minutes.',
+    })
+  }
+
+  const password = typeof request.body?.password === 'string'
+    ? request.body.password
+    : ''
+
+  if (!safeStringEqual(password, process.env.APP_PASSWORD)) {
+    record.count += 1
+    return response.status(401).json({ error: 'Incorrect password' })
+  }
+
+  failedLogins.delete(key)
+
+  const token = signToken({
+    sub: 'planner-user',
+    exp: Math.floor(now / 1000) + TOKEN_LIFETIME_SECONDS,
+  })
+
+  response.json({ token, expiresIn: TOKEN_LIFETIME_SECONDS })
+})
 
 // Is the process alive?
 app.get('/healthz', (request, response) => {
@@ -72,8 +195,32 @@ function validate(body) {
     errors.push('description must be 2000 characters or fewer')
   }
 
-  if (!due_date || !/^\d{4}-\d{2}-\d{2}$/.test(due_date)) {
+  // Validate both the date format and the actual calendar date.
+  const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(due_date)
+  let validDate = false
+
+  if (dateMatch) {
+    const year = Number(dateMatch[1])
+    const month = Number(dateMatch[2])
+    const day = Number(dateMatch[3])
+    const parsedDate = new Date(Date.UTC(year, month - 1, day))
+
+    validDate =
+      year >= 1 &&
+      parsedDate.getUTCFullYear() === year &&
+      parsedDate.getUTCMonth() === month - 1 &&
+      parsedDate.getUTCDate() === day
+  }
+
+  if (!validDate) {
     errors.push('due_date must be a valid date in YYYY-MM-DD format')
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(body, 'completed') &&
+    typeof body.completed !== 'boolean'
+  ) {
+    errors.push('completed must be a boolean')
   }
 
   if (!['Low', 'Medium', 'High'].includes(priority)) {
@@ -92,6 +239,9 @@ function validate(body) {
     }
   }
 }
+
+// All task endpoints require a valid server-issued token.
+app.use('/api/tasks', requireAuth)
 
 // Get all tasks.
 app.get('/api/tasks', async (request, response, next) => {

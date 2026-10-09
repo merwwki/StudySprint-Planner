@@ -35,3 +35,10 @@ export const {
   updateTask,
   deleteTask,
 } = implementation
+
+export const login = (...args) => {
+  if (USING_MOCK_API) {
+    return Promise.resolve({ token: 'demo-session', expiresIn: 0 })
+  }
+  return httpApi.login(...args)
+}

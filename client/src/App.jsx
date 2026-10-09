@@ -1,36 +1,41 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 import Dashboard from './pages/Dashboard.jsx'
 import Tasks from './pages/Tasks.jsx'
 import About from './pages/About.jsx'
-
-const ACCESS_PASSWORD = import.meta.env.VITE_ACCESS_PASSWORD
+import { login, USING_MOCK_API } from './api/index.js'
 
 export default function App() {
   const [authenticated, setAuthenticated] = useState(
-    sessionStorage.getItem('studysprint-auth') === 'true'
+    USING_MOCK_API || Boolean(sessionStorage.getItem('studysprint-token'))
   )
 
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
-  function handleLogin(event) {
+  async function handleLogin(event) {
     event.preventDefault()
+    setError('')
 
-    if (password === ACCESS_PASSWORD) {
-      sessionStorage.setItem('studysprint-auth', 'true')
+    try {
+      const result = await login(password)
+
+      if (!USING_MOCK_API) {
+        sessionStorage.setItem('studysprint-token', result.token)
+      }
+
       setAuthenticated(true)
       setPassword('')
-      setError('')
-    } else {
-      setError('Incorrect password. Please try again.')
+    } catch (err) {
+      setError(err.message || 'Login failed. Please try again.')
     }
   }
 
   function handleLogout() {
-    sessionStorage.removeItem('studysprint-auth')
-    setAuthenticated(false)
+    sessionStorage.removeItem('studysprint-token')
+    setAuthenticated(USING_MOCK_API)
     setPassword('')
+    setError('')
   }
 
   if (!authenticated) {
