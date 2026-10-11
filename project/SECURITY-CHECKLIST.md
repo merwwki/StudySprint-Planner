@@ -15,7 +15,7 @@ Replace the example evidence with your own.
 | # | Check | Yes / No / N/A | Evidence |
 | --- | --- | --- | --- |
 | 1 | `.env` is gitignored and is not in the repository | Yes | Only the three .env.example files are tracked. |
-| 2 | A `.env.example` with placeholder values only is committed | Yes | server/.env.example contains devpassword. |
+| 2 | A `.env.example` with placeholder values only is committed | Yes | server/.env.example uses CHANGE_ME as the database password placeholder; no real credentials are included in the example. |
 | 3 | No connection string, key, token or password is hardcoded in source, comments or commented-out code | Yes | Application source code contains no hardcoded production credentials. Sensitive values are loaded from environment variables. |
 | 4 | Git history is clean: I searched `git log -p` for password, secret, api key and `postgres://` | No | Previous commits included the access password. |
 | 5 | Any credential that was ever committed has been rotated | Yes | The database password and frontend password were changed, and a successful frontend deployment was confirmed. |
@@ -47,11 +47,11 @@ If your project has no workflows, mark every row N/A and say so once.
 
 | # | Check | Yes / No / N/A | Evidence |
 | --- | --- | --- | --- |
-| 18 | The app has an access layer: Cloudflare Zero Trust, an app-level password, or a real login | Yes | The deployed frontend displays a password gate. This protects the frontend screen only; it does not independently secure the API. |
+| 18 | The app has an access layer: Cloudflare Zero Trust, an app-level password, or a real login | Yes | The deployed app displays a login screen, and the API independently requires a valid server-issued authentication token. Unauthenticated requests were tested and returned HTTP 401. |
 | 19 | If Supabase or Firebase: Row Level Security or security rules are on, and I tested it signed out | N/A | The application uses Neon PostgreSQL rather than Supabase or Firebase. |
-| 20 | If Zero Trust: tjakoen.s@gmail.com is on the access policy. If an app password: the credentials are in my private workspace `project/README.md` | Yes | The API access password and token-signing secret are stored in server environment variables and are not exposed in public frontend code or documentation. |
+| 20 | If Zero Trust: tjakoen.s@gmail.com is on the access policy. If an app password: the credentials are in my private workspace `project/README.md` | Yes | APP_PASSWORD and AUTH_SECRET are configured in Render Environment settings. Their actual values are kept out of the public frontend and documentation. |
 | 21 | The gate covers every route, including the ones that only change data | Yes | All task API endpoints require a valid server-issued token. Unauthenticated requests are rejected, including requests to read, create, update, or delete tasks. |
-| 22 | The credentials for the gate are environment variables, not in source | Yes | client/src/App.jsx reads import.meta.env.VITE_ACCESS_PASSWORD, supplied by the GitHub Actions workflow. Limitation: frontend build variables are not secure secrets.
+| 22 | The credentials for the gate are environment variables, not in source | Yes | server/server.js reads APP_PASSWORD and AUTH_SECRET from server environment variables. The frontend sends login requests to the API and does not use VITE_ACCESS_PASSWORD. |
 ## Input and output
 
 | # | Check | Yes / No / N/A | Evidence |
