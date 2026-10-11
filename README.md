@@ -4,7 +4,8 @@ A lightweight academic task planner that helps students organize assignments, de
 
 **Live site:** https://merwwki.github.io/StudySprint-Planner/  
 **API:** https://studysprint-api-5bsr.onrender.com/healthz  
-**Demo video:** https://drive.google.com/file/d/1Xlq38JNU4ns0smNxkrh62V_MKt3_PxL4/view?usp=share_link
+**Demo video:** https://drive.google.com/file/d/1qAYQeVaabI9UZiDAAm8CbiiAuQ7rZUN_/view?usp=share_link 
+
 
 ![A screenshot of the main screen](docs/assets/screenshot.png)
 
