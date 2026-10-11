@@ -4,7 +4,7 @@ A lightweight academic task planner that helps students organize assignments, de
 
 **Live site:** https://merwwki.github.io/StudySprint-Planner/  
 **API:** https://studysprint-api-5bsr.onrender.com/healthz  
-**Demo video:** (link)
+**Demo video:** https://drive.google.com/file/d/1Xlq38JNU4ns0smNxkrh62V_MKt3_PxL4/view?usp=share_link
 
 ![A screenshot of the main screen](docs/assets/screenshot.png)
 
@@ -174,6 +174,8 @@ Environment variables containing actual credentials are not committed to the rep
 | --- | --- | --- |
 | `DATABASE_URL` | server | PostgreSQL connection string used by the Express backend |
 | `CORS_ORIGINS` | server | Origins allowed to communicate with the API |
+| `APP_PASSWORD` | server | Shared password required to access the application |
+| `AUTH_SECRET` | server | Secret used to sign and verify authentication tokens; use a random value of at least 32 characters |
 | `NODE_ENV` | server | Application environment, such as `production` |
 | `PORT` | server | Server port; the production host can provide this automatically |
 | `VITE_USE_MOCK_API` | client, at build time | Determines whether the client uses the mock API or real API |
@@ -311,11 +313,11 @@ The main task operations are:
 | Update | Edit Task, Complete Task, Reopen Task |
 | Delete | Delete Task |
 
-The application is currently designed as a single-user student planner and does not include authentication or individual user accounts.
+The application uses a shared application password for access and server-side token authentication for protected API requests. It does not currently support individual user accounts or separate task lists for different students.
 
 ## What I would do next
 
-- Add user accounts and authentication so multiple students can have separate task lists.
+- Add individual user accounts and per-user task lists.
 - Add search functionality for task titles and subjects.
 - Add additional filtering by subject or priority.
 - Add a calendar view for academic deadlines.
@@ -323,8 +325,6 @@ The application is currently designed as a single-user student planner and does 
 - Add recurring tasks for weekly academic activities.
 - Add additional dashboard statistics and progress information.
 - Add file attachments for assignments and academic resources.
-
-## Author
 
 ## Author
 

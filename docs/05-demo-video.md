@@ -1,33 +1,55 @@
-# Demo video
+# StudySprint Planner — Demo Video
 
-Three to five minutes, screen recorded, your own voice. Nobody watches ten.
+## Introduction
 
-**Link:** (paste it here, and in the main README)
+StudySprint Planner is a web-based academic task planner designed to help students organize assignments, manage deadlines, and track completed work.
 
-## The structure that always works
+The application provides a centralized interface for managing academic tasks through a frontend connected to a backend API and PostgreSQL database.
 
-1. **Thirty seconds.** What it is and who it is for. Show the app, not a slide.
-2. **Two to three minutes.** The main flow, end to end, on the **deployed** site,
-   with data you prepared in advance. Not an empty database, and not a form you
-   fill in slowly while talking.
-3. **Thirty seconds.** One thing you are proud of technically. Open one file and
-   explain a decision. This is where you show it is yours.
-4. **Thirty seconds.** One honest thing you would do differently. It is the
-   sentence that makes everything else credible.
+## Application Demonstration
 
-## Before you record
+The demonstration begins with the deployed StudySprint Planner website and its configured login mechanism.
 
-- [ ] Open the site five minutes early so a free-tier API is awake
-- [ ] Record the **deployed** URL, not `localhost`
-- [ ] Close your other tabs. Check for personal messages, other students' names,
-      and any `.env` file open in an editor
-- [ ] Seed realistic data
-- [ ] Do a full practice run. If something breaks, stop and start again rather
-      than narrating the bug
+After logging in, the task dashboard displays saved academic tasks and their available details, including titles, subjects, due dates, priorities, and completion status.
 
-## Have a fallback
+The demonstration then shows the main task-management workflow.
 
-In order of preference: a demo-mode build of the client, a recording of the
-working app, screenshots. A demo that fails with no fallback is a bad five
-minutes. A demo that fails where you say "here is the recording, and here is what
-went wrong" is a good one.
+### Creating a Task
+
+A new academic task is entered through the task form. The task details include its title, subject, description, due date, and priority. After submission, the new task appears in the dashboard.
+
+### Editing a Task
+
+An existing task is selected for editing. One or more details are updated, and the changes are saved. The dashboard then displays the updated information.
+
+### Tracking Completion
+
+A task is marked as completed to demonstrate the application's completion-tracking functionality. This allows users to distinguish finished work from tasks that still need attention.
+
+### Deleting a Task
+
+A prepared demonstration task is deleted. The task is removed from the dashboard after the operation succeeds.
+
+## Technical Overview
+
+StudySprint Planner uses React and Vite for the frontend, Node.js and Express for the backend API, and PostgreSQL for persistent data storage.
+
+The frontend communicates with the backend API to perform task operations. The backend processes requests and interacts with the database to retrieve and update task records.
+
+The frontend is deployed on GitHub Pages, the backend API is hosted on Render, and the database is hosted on Neon.
+
+Separating the frontend, backend, and database organizes the application into distinct components with different responsibilities.
+
+## Reflection
+
+Developing StudySprint Planner provided practical experience in building and deploying a full-stack web application. Connecting the frontend, backend API, and database required attention to request handling, data persistence, configuration, and testing.
+
+Future improvements could include additional automated tests, improved task organization, calendar integration, and deadline notifications. These enhancements would build on the current task-management functionality.
+
+## Demonstration Scope
+
+The video demonstrates the actual deployed application and its working features. It presents the main workflow of logging in, viewing tasks, creating a task, editing a task, tracking completion, and deleting a task.
+
+The technical explanation focuses on the application's architecture and the responsibilities of its frontend, backend, and database.
+
+The demonstration is intended to provide a concise overview of the application's functionality, technical implementation, and development experience.
